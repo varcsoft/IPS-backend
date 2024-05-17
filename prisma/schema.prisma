@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB")
+}
+
+model role {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(50)
+  created_on  DateTime @db.Timestamp(0)
+  modified_on DateTime @default(now()) @db.Timestamp(0)
+  user        user[]
+}
+
+model user {
+  id          Int      @id @default(autoincrement())
+  password    String   @db.VarChar(100)
+  name        String   @db.VarChar(50)
+  email       String   @unique @db.VarChar(50)
+  token       String?  @db.VarChar(255)
+  role_id     Int?     @default(1)
+  role        role?    @relation(fields: [role_id], references: [id], onDelete: SetNull)
+  created_on  DateTime @db.Timestamp(0)
+  modified_on DateTime @default(now()) @db.Timestamp(0)
+  tag         tag[]
+}
+
+model tag {
+  id          Int      @id @default(autoincrement())
+  rssi        Int     @default(0)
+  user_id     Int
+  user        user     @relation(fields: [user_id], references: [id])
+  created_on  DateTime @db.Timestamp(0)
+  modified_on DateTime @default(now()) @db.Timestamp(0)
+}
