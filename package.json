@@ -25,6 +25,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.9",
     "pg": "^8.11.3",
+    "socket.io": "^4.7.5",
     "ua-parser-js": "^1.0.37"
   },
   "devDependencies": {
