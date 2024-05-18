@@ -6,4 +6,4 @@ const initprisma = () => {
     }
     return prisma;
 };
-export { prisma,initprisma }
+export { prisma, initprisma }
