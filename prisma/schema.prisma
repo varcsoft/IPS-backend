@@ -12,27 +12,32 @@ model role {
   name        String   @unique @db.VarChar(50)
   created_on  DateTime @db.Timestamp(0)
   modified_on DateTime @default(now()) @db.Timestamp(0)
-  user        user[]
+  user        tag[]
 }
 
-model user {
+model tag {
   id          Int      @id @default(autoincrement())
   password    String   @db.VarChar(100)
   name        String   @db.VarChar(50)
   email       String   @unique @db.VarChar(50)
   token       String?  @db.VarChar(255)
+  xcord       Float    @default(0)
+  ycord       Float    @default(0)
   role_id     Int?     @default(1)
   role        role?    @relation(fields: [role_id], references: [id], onDelete: SetNull)
   created_on  DateTime @db.Timestamp(0)
   modified_on DateTime @default(now()) @db.Timestamp(0)
-  tag         tag[]
+  coords      coords[]
 }
 
-model tag {
+model coords {
   id          Int      @id @default(autoincrement())
-  rssi        Int     @default(0)
-  user_id     Int
-  user        user     @relation(fields: [user_id], references: [id])
+  tag_id      Int
+  rssi1       Int
+  rssi2       Int
+  rssi3       Int
+  rssi4       Int
   created_on  DateTime @db.Timestamp(0)
   modified_on DateTime @default(now()) @db.Timestamp(0)
+  tag         tag      @relation(fields: [tag_id], references: [id])
 }

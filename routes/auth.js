@@ -1,4 +1,4 @@
-import usercontroller from "../controllers/user.js"
+import usercontroller from "../controllers/tag.js"
 import express from "express";
 const router = express.Router()
 

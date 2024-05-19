@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
+    "start": "bun index.js",
     "dev": "nodemon index.js",
     "build": "npm install",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -26,6 +26,7 @@
     "nodemailer": "^6.9.9",
     "pg": "^8.11.3",
     "socket.io": "^4.7.5",
+    "socket.io-client":"^4.7.4",
     "ua-parser-js": "^1.0.37"
   },
   "devDependencies": {

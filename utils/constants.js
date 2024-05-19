@@ -1,7 +1,7 @@
 const QR_PREFIX = "PAYX";
 const SECRET="secret";
 const ROLES={
-    USER:1,
+    TAG:1,
     ADMIN:2
 }
 

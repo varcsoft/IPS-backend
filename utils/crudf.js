@@ -13,7 +13,6 @@ const handlePrismaError = (error,table,type) => {
 };
 
 const get = async (table, query, include, where, orderby) => {
-    for (let key in query) query[key] = Number(query[key]);
     where = where || {};
     where = { ...where, ...query };
     return prisma[table].findMany({ where, include, orderby })
@@ -40,6 +39,11 @@ const updatebyid = async (table, id, body) => {
         .catch(e => handlePrismaError(e,table,"update"));
 }
 
+const updatebywhere = async (table, where, body) => {
+    return prisma[table].update({ where, data: body })
+        .catch(e => handlePrismaError(e,table,"update"));
+}
+
 const create = async (table, body, required, where) => {
     checkvalues(required);
     if (where) {
@@ -61,4 +65,4 @@ const createmany = async (table, body, required) => {
         .catch(e => handlePrismaError(e,table,"create"));
 }
 
-export default { get, getbyid, getbywhere, deletebyid, create, createmany, updatebyid };
+export default { get, getbyid, getbywhere, deletebyid, create, createmany, updatebyid, updatebywhere };
