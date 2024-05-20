@@ -4,13 +4,11 @@ import ApiError from '../utils/ApiError.js';
 import auth from "../middlewares/checkAuth.js";
 import tagRoutes from "../routes/tag.js";
 import roleRoutes from "../routes/role.js";
-import cors from 'cors';
 
 export default (app) => {
     app.get('/', async (req, res) => res.json('Hello! IPS WELCOMES YOU'));
     app.get('/ping', async (req, res) => res.json('pong!'));
     
-    app.use(cors())
     app.use("/auth", authRoutes);
     app.use(auth.checkToken);
     app.use("/tag", tagRoutes);
