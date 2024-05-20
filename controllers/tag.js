@@ -23,8 +23,10 @@ const initsocket = async (app) => {
     io.on('connection', async (socket) => {
         console.log('Connected user : ' + socket.id);
         console.log("Recovered: " + socket.recovered);
-        const tags = await crudf.get("tag");
-        io.emit('chat message', tags);
+        socket.on('chat message', async () => {
+            const tags = await crudf.get("tag");
+            io.emit('chat message', tags);    
+        });
         socket.on('disconnect', () => {
             console.log('A user disconnected');
         });
@@ -76,7 +78,8 @@ const login = async (req,res,next) => {
 const updatecoords = async (req,res,next) => {
     try {
         const data = await updatecords(req);
-        const tags = await crudf.get("tag");
+        let tags = await crudf.get("tag",{},{coords:true});
+        tags=tags.map(tag => ({ name:tag.name,coords:tag.coords[0] }) );
         io.emit('chat message', tags);
         return sendresponse(res, data, 200);
     } catch (e) {
