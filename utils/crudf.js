@@ -24,11 +24,6 @@ const getbyid = async (table, id, include) => {
         .catch(e => handlePrismaError(e,table,"get"));
 }
 
-const getbywhere = async (table, where, include) => {
-    return prisma[table].findUnique({ where, include })
-        .catch(e => handlePrismaError(e,table,"get"));
-}
-
 const deletebyid = async (table, id) => {
     return prisma[table].delete({ where: { id: Number(id) } })
         .catch(e => handlePrismaError(e,table,"delete"));
@@ -65,4 +60,4 @@ const createmany = async (table, body, required) => {
         .catch(e => handlePrismaError(e,table,"create"));
 }
 
-export default { get, getbyid, getbywhere, deletebyid, create, createmany, updatebyid, updatebywhere };
+export default { get, getbyid, deletebyid, create, createmany, updatebyid, updatebywhere };

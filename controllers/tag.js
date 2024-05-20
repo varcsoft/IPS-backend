@@ -5,7 +5,6 @@ import bcrypt from "bcrypt";
 import checkAuth from "../middlewares/checkAuth.js";
 import constants from "../utils/constants.js";
 const salt = bcrypt.genSaltSync(10);
-let include ={role:{select:{id:true,name:true}}};
 import http from 'http';
 import { Server } from 'socket.io';
 let io;
@@ -25,8 +24,7 @@ const initsocket = async (app) => {
         console.log('Connected user : ' + socket.id);
         console.log("Recovered: " + socket.recovered);
         socket.on('chat message', async () => {
-            let tags = await crudf.get("tag",{},{coords:true});
-            tags=tags.map(tag => ({ name:tag.name,coords:tag.coords[0] }) );
+            let tags = await getalltags();
             socket.emit('chat message', tags);    
         });
         socket.on('disconnect', () => {
@@ -38,14 +36,19 @@ const initsocket = async (app) => {
     })
 }
 
-const get = async (req, res, next) => crud.get(req,res,next,"tag",include);
-const getbyid = async (req, res, next) => crud.getbyid(req,res,next,"tag",include);
-const deletebyid = async (req, res, next) => crud.deletebyid(req,res,next,"tag");
+let include ={role:{select:{id:true,name:true}},coords:{select:{rssi1:true,rssi2:true,rssi3:true,rssi4:true}}};
+const select = ["id","name","email","token","role","coords"];
+const get = async (req, res, next) => crud.get(req,res,next,"tag",select,include);
+const getbyid = async (req, res, next) => crud.getbyid(req,res,next,"tag",select,include);
+const deletebyid = async (req, res, next) => crud.deletebyid(req,res,next,"tag",select);
 
+const getalltags = async (req, res, next) => {
+    return crudf.get("tag",{},{coords:true},undefined,{coords:{created_on:"desc"}});
+}
 const put = async (req, res, next) => {
     try {
         const data = await updatetag(req);
-        return sendresponse(res, data, 200);
+        return sendresponse(res, data, 200,select);
     } catch (e) {
         next(e);
     }
@@ -54,7 +57,7 @@ const put = async (req, res, next) => {
 const post = async (req,res,next) => {
     try {
         const data = await createtag(req,"TAG");
-        return sendresponse(res, data, 201);
+        return sendresponse(res, data, 201,select);
     } catch (e) {
         next(e);
     }
@@ -63,15 +66,14 @@ const post = async (req,res,next) => {
 const login = async (req,res,next) => {
     try {
         const { email,password } = req.body;
-        const tag = await crudf.getbywhere("tag",{email});
+        let tag = await crudf.get("tag",{email});
+        tag = tag[0];
         if(!tag) throw new Error("Invalid email");
         if(bcrypt.compareSync(tag.password,password)) throw new Error("Invalid password");
         let token = await checkAuth.getToken(email,tag.id,tag.role_id);
         tag.token = token;
         await crudf.updatebyid("tag",tag.id,{token});
-        delete tag.password;
-        delete tag.token;
-        sendresponse(res,{...tag,token},201);
+        sendresponse(res,{...tag,token},201,select);
     } catch (e) {
         next(e);
     }
@@ -80,10 +82,9 @@ const login = async (req,res,next) => {
 const updatecoords = async (req,res,next) => {
     try {
         const data = await updatecords(req);
-        let tags = await crudf.get("tag",{},{coords:true});
-        tags=tags.map(tag => ({ name:tag.name,coords:tag.coords[0] }) );
+        let tags = await getalltags();
         io.emit('chat message', tags);
-        return sendresponse(res, data, 200);
+        return sendresponse(res, data, 200,select);
     } catch (e) {
         next(e);
     }

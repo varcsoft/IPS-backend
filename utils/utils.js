@@ -6,15 +6,41 @@ function checkvalues(required) {
     }
 }
 
-function sendresponse(res, data, status) {
+function sendresponse(res, data, status,select) {
     let finaldata;
     if(data==null || !data || data=={} || data.length==0) {
         finaldata = {"message": "data not found", "data": {}, "count": 0 };
         status=404;
     } else if (Array.isArray(data)) {
-        finaldata = {"message": "success", "data": data, "count": data.length };
+        if (select) {
+            finaldata = {
+                "message": "success",
+                "data": data.map(item => {
+                    return Object.keys(item)
+                        .filter(key => select.includes(key))
+                        .reduce((obj, key) => {
+                            obj[key] = item[key];
+                            return obj;
+                        }, {});
+                })
+            };
+        } else {
+            finaldata = {"message": "success", "data": data, "count": data.length };
+        }
     } else {
-        finaldata = {"message": "success", "data": data };
+        if(select){
+            finaldata = {
+                "message": "success",
+                "data": Object.keys(data)
+                    .filter(key => select.includes(key))
+                    .reduce((obj, key) => {
+                        obj[key] = data[key];
+                        return obj;
+                    }, {})
+            };
+        } else {
+            finaldata = {"message": "success", "data": data };
+        }
     }
     console.log("data:" + JSON.stringify(data));
     log("success",status);
