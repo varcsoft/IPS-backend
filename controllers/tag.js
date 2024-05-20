@@ -21,11 +21,13 @@ const initsocket = async (app) => {
         }
     );
     io.on('connection', async (socket) => {
+        socket.emit('chat message', "connected");
         console.log('Connected user : ' + socket.id);
         console.log("Recovered: " + socket.recovered);
         socket.on('chat message', async () => {
-            const tags = await crudf.get("tag");
-            io.emit('chat message', tags);    
+            let tags = await crudf.get("tag",{},{coords:true});
+            tags=tags.map(tag => ({ name:tag.name,coords:tag.coords[0] }) );
+            socket.emit('chat message', tags);    
         });
         socket.on('disconnect', () => {
             console.log('A user disconnected');
