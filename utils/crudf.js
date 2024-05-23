@@ -34,7 +34,7 @@ const updatebyid = async (table, id, body) => {
         .catch(e => handlePrismaError(e,table,"update"));
 }
 
-const updatebywhere = async (table, where, body) => {
+const updatebywhere = async (table,body, where) => {
     return prisma[table].update({ where, data: body })
         .catch(e => handlePrismaError(e,table,"update"));
 }
