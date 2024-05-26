@@ -25,7 +25,7 @@ const getbyid = async (req, res, next, table,select, include) => {
 const deletebyid = async (req, res, next, table) => {
     try {
         await crudf.deletebyid(table, req.params.id);
-        return sendresponse(res, `Record with id ${req.params.id} deleted successfully from ${table}`, 200,select);
+        return sendresponse(res, `Record with id ${req.params.id} deleted successfully from ${table}`, 200);
     } catch (e) {
         next(e);
     }
@@ -34,7 +34,7 @@ const deletebyid = async (req, res, next, table) => {
 const create = async (req, res, next, table, body, required, where) => {
     try {
         await crudf.create(table, body, required, where);
-        return sendresponse(res, `Record created successfully in ${table}`, 201,select);
+        return sendresponse(res, `Record created successfully in ${table}`, 201);
     } catch (e) {
         next(e);
     }
@@ -43,7 +43,7 @@ const create = async (req, res, next, table, body, required, where) => {
 const createmany = async (req, res, next, table, body, required) => {
     try {
         await crudf.createmany(table, body, required);
-        return sendresponse(res, `Records created successfully in ${table}`, 201,select);
+        return sendresponse(res, `Records created successfully in ${table}`, 201);
     } catch (e) {
         next(e);
     }
@@ -52,7 +52,7 @@ const createmany = async (req, res, next, table, body, required) => {
 const update = async (req, res, next, table, body) => {
     try {
         await crudf.updatebyid(table, req.params.id, body);
-        return sendresponse(res, `Record with id ${req.params.id} updated successfully in ${table}`, 200,select);
+        return sendresponse(res, `Record with id ${req.params.id} updated successfully in ${table}`, 200);
     } catch (e) {
         next(e);
     }
