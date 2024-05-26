@@ -1,6 +1,4 @@
-package-lock.json
 node_modules/*
-.idea/*
 uploads/*
 sql/*
 !uploads/.gitkeep
