@@ -41,3 +41,13 @@ model coords {
   modified_on DateTime @default(now()) @db.Timestamp(0)
   tag         tag      @relation(fields: [tag_id], references: [id])
 }
+
+model anchor {
+  id          Int      @id @default(autoincrement())
+  name        String
+  bssid       String
+  xcord       Float
+  ycord       Float
+  created_on  DateTime @db.Timestamp(0)
+  modified_on DateTime @default(now()) @db.Timestamp(0)
+}
