@@ -37,7 +37,7 @@ const initsocket = async (app) => {
 }
 
 let include ={role:{select:{id:true,name:true}},coords:{select:{rssi1:true,rssi2:true,rssi3:true,rssi4:true}}};
-const select = ["id","name","email","token","role","coords"];
+const select = ["id","name","email","role","coords"];
 const get = async (req, res, next) => crud.get(req,res,next,"tag",select,include);
 const getbyid = async (req, res, next) => crud.getbyid(req,res,next,"tag",select,include);
 const deletebyid = async (req, res, next) => crud.deletebyid(req,res,next,"tag");
@@ -73,7 +73,7 @@ const login = async (req,res,next) => {
         let token = await checkAuth.getToken(email,tag.id,tag.role_id);
         tag.token = token;
         await crudf.updatebyid("tag",tag.id,{token});
-        sendresponse(res,{...tag,token},201,select);
+        sendresponse(res,{...tag,token},201,[...select,"token"]);
     } catch (e) {
         next(e);
     }
