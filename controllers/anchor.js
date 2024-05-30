@@ -16,7 +16,7 @@ const put = async (req, res, next) => {
 
 const post = async (req, res, next) => {
     let { name, bssid, xcord, ycord } = req.body;
-    const anchors = await crudf.get(req, res, next, "anchor", select, include);
+    const anchors = await crudf.get("anchor");
     if (anchors.length > 4) return res.status(400).json({ message: "Maximum(4) Anchors reached. Kindly delete some anchors to add new ones." });
     const body = { name, bssid, xcord, ycord };
     const required = body;
