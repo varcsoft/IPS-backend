@@ -40,7 +40,7 @@ let include ={role:{select:{id:true,name:true}},coords:{select:{rssi1:true,rssi2
 const select = ["id","name","email","token","role","coords"];
 const get = async (req, res, next) => crud.get(req,res,next,"tag",select,include);
 const getbyid = async (req, res, next) => crud.getbyid(req,res,next,"tag",select,include);
-const deletebyid = async (req, res, next) => crud.deletebyid(req,res,next,"tag",select);
+const deletebyid = async (req, res, next) => crud.deletebyid(req,res,next,"tag");
 
 const getalltags = async (req, res, next) => {
     return crudf.get("tag",{},{coords:true},undefined,{coords:{created_on:"desc"}});
