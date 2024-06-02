@@ -10,7 +10,7 @@ import { Server } from 'socket.io';
 let io;
 const initsocket = async (app) => {
     const server = http.createServer(app);
-    const port = 9090;
+    const port = 5004;
     io = new Server(server,
         {
             cors: {
@@ -36,17 +36,19 @@ const initsocket = async (app) => {
     })
 }
 
-let include ={role:{select:{id:true,name:true}},coords:{select:{rssi1:true,rssi2:true,rssi3:true,rssi4:true}}};
-const select = ["id","name","email","role","coords"];
+let include ={role:{select:{id:true,name:true}}};
+const select = ["id","name","email","role","xcord","ycord","created_on","modified_on"];
 const get = async (req, res, next) => crud.get(req,res,next,"tag",select,include);
 const getbyid = async (req, res, next) => crud.getbyid(req,res,next,"tag",select,include);
 const deletebyid = async (req, res, next) => crud.deletebyid(req,res,next,"tag");
 
 const getalltags = async (req, res, next) => {
-    return crudf.get("tag",{},{coords:true},undefined,{coords:{created_on:"desc"}});
+    return crudf.get("tag",{},{coords:true},undefined);
 }
 const put = async (req, res, next) => {
     try {
+        console.log(req.body);
+        console.log(req.params.id);
         const data = await updatetag(req);
         return sendresponse(res, data, 200,select);
     } catch (e) {
