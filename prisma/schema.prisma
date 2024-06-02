@@ -24,10 +24,10 @@ model tag {
   xcord       Float    @default(0)
   ycord       Float    @default(0)
   role_id     Int?     @default(1)
-  role        role?    @relation(fields: [role_id], references: [id], onDelete: SetNull)
   created_on  DateTime @db.Timestamp(0)
   modified_on DateTime @default(now()) @db.Timestamp(0)
   coords      coords[]
+  role        role?    @relation(fields: [role_id], references: [id])
 }
 
 model coords {

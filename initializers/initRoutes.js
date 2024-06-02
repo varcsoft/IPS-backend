@@ -9,13 +9,14 @@ import anchorRoutes from "../routes/anchor.js";
 export default (app) => {
     app.get('/', async (req, res) => res.json('Hello! IPS WELCOMES YOU'));
     app.get('/ping', async (req, res) => res.json('pong!'));
-    
+
     app.use("/auth", authRoutes);
     app.use(auth.checkToken);
     app.use("/tag", tagRoutes);
+    // app.use("/mytag",)
     app.use("/role", roleRoutes);
     app.use("/anchor", anchorRoutes);
 
-    app.use((req, res, next) => next(new ApiError(404,'Not found')));
+    app.use((req, res, next) => next(new ApiError(404, 'Not found')));
     app.use(errorHandler);
 }

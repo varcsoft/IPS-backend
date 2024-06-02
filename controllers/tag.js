@@ -25,7 +25,7 @@ const initsocket = async (app) => {
         console.log("Recovered: " + socket.recovered);
         socket.on('chat message', async () => {
             let tags = await getalltags();
-            socket.emit('chat message', tags);    
+            socket.emit('chat message', tags);
         });
         socket.on('disconnect', () => {
             console.log('A user disconnected');
@@ -36,82 +36,94 @@ const initsocket = async (app) => {
     })
 }
 
-let include ={role:{select:{id:true,name:true}}};
-const select = ["id","name","email","role","xcord","ycord","created_on","modified_on"];
-const get = async (req, res, next) => crud.get(req,res,next,"tag",select,include);
-const getbyid = async (req, res, next) => crud.getbyid(req,res,next,"tag",select,include);
-const deletebyid = async (req, res, next) => crud.deletebyid(req,res,next,"tag");
+let include = { role: { select: { id: true, name: true } } };
+const select = ["id", "name", "email", "role", "xcord", "ycord", "created_on", "modified_on"];
+const get = async (req, res, next) => crud.get(req, res, next, "tag", select, include);
+const getbyid = async (req, res, next) => crud.getbyid(req, res, next, "tag", select, include);
+const deletebyid = async (req, res, next) => crud.deletebyid(req, res, next, "tag");
 
 const getalltags = async (req, res, next) => {
-    return crudf.get("tag",{},{coords:true},undefined);
+    return crudf.get("tag", {}, { coords: true }, undefined);
 }
 const put = async (req, res, next) => {
     try {
         console.log(req.body);
         console.log(req.params.id);
         const data = await updatetag(req);
-        return sendresponse(res, data, 200,select);
+        return sendresponse(res, data, 200, select);
     } catch (e) {
         next(e);
     }
 }
 
-const post = async (req,res,next) => {
+const post = async (req, res, next) => {
     try {
-        const data = await createtag(req,"TAG");
-        return sendresponse(res, data, 201,select);
+        const data = await createtag(req, "TAG");
+        return sendresponse(res, data, 201, select);
     } catch (e) {
         next(e);
     }
 }
 
-const login = async (req,res,next) => {
+const login = async (req, res, next) => {
     try {
-        const { email,password } = req.body;
-        let tag = await crudf.get("tag",{email});
+        const { email, password } = req.body;
+        let tag = await crudf.get("tag", { email });
         tag = tag[0];
-        if(!tag) throw new Error("Invalid email");
-        if(bcrypt.compareSync(tag.password,password)) throw new Error("Invalid password");
-        let token = await checkAuth.getToken(email,tag.id,tag.role_id);
+        if (!tag) throw new Error("Invalid email");
+        if (bcrypt.compareSync(tag.password, password)) throw new Error("Invalid password");
+        let token = await checkAuth.getToken(email, tag.id, tag.role_id);
         tag.token = token;
-        await crudf.updatebyid("tag",tag.id,{token});
-        sendresponse(res,{...tag,token},201,[...select,"token"]);
+        await crudf.updatebyid("tag", tag.id, { token });
+        sendresponse(res, { ...tag, token }, 201, [...select, "token"]);
     } catch (e) {
         next(e);
     }
 }
 
-const updatecoords = async (req,res,next) => {
+const updatecoords = async (req, res, next) => {
     try {
         const data = await updatecords(req);
         let tags = await getalltags();
         io.emit('chat message', tags);
-        return sendresponse(res, data, 200,select);
+        return sendresponse(res, data, 200, select);
     } catch (e) {
         next(e);
     }
 }
 
-const createtag = async (req,role) => {
-    let { password,name,email,token,role_id } = req.body;
+const createtag = async (req, role) => {
+    let { password, name, email, token, role_id } = req.body;
     password = bcrypt.hashSync(password, salt);
     role_id = role_id || constants.ROLES[role];
-    const body = { password,name,email,token,role_id };
-    const required = { email,password,name,role_id };
-    return crudf.create("tag",body,required,{email});
+    const body = { password, name, email, token, role_id };
+    const required = { email, password, name, role_id };
+    return crudf.create("tag", body, required, { email });
 }
 
 const updatetag = async (req) => {
-    let { password,name,email,token,role_id } = req.body;
-    if(password) password = bcrypt.hashSync(password, salt);
-    const body = { password,name,email,token,role_id };
-    return crudf.updatebyid("tag",req.params.id,body);
+    let { password, name, email, token, role_id, xcord, ycord } = req.body;
+    if (password) password = bcrypt.hashSync(password, salt);
+    xcord = parseFloat(xcord);
+    ycord = parseFloat(ycord);
+    const body = { password, name, email, token, role_id, xcord, ycord };
+    return crudf.updatebyid("tag", req.user.id, body);
 }
 
 const updatecords = async (req) => {
-    let { xcord,ycord,rssi1,rssi2,rssi3,rssi4 } = req.body;
-    await crudf.create("coords",{ rssi1,rssi2,rssi3,rssi4,tag_id:Number(req.params.id) },{ rssi1,rssi2,rssi3,rssi4,tag_id:Number(req.params.id) });
-    return crudf.updatebyid("tag",req.params.id,{ xcord,ycord });
+    let { xcord, ycord, rssi1, rssi2, rssi3, rssi4 } = req.body;
+    await crudf.create("coords", { rssi1, rssi2, rssi3, rssi4, tag_id: Number(req.params.id) }, { rssi1, rssi2, rssi3, rssi4, tag_id: Number(req.params.id) });
+    return crudf.updatebyid("tag", req.params.id, { xcord, ycord });
+}
+const getTag = async (req, res, next) => {
+    try {
+        // extract from token
+        console.log(req.user)
+        const data = await crudf.getbyid("tag", req.user.id);
+        return sendresponse(res, data, 200, select);
+    } catch (e) {
+        next(e);
+    }
 }
 
-export default{ get, getbyid, post, put, deletebyid,login,createtag,updatetag,updatecoords,initsocket };
+export default { get, getbyid, post, put, deletebyid, login, createtag, updatetag, updatecoords, initsocket, getTag };

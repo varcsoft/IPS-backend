@@ -5,16 +5,16 @@ import dotenv from "dotenv";
 dotenv.config();
 const INVALIDAUTH = 'INVALID AUTH';
 
-const getToken = (email,id,role,time) => {
-    return jwt.sign({ email, id: id.toString(), role: !role ? "role" : role }, constants.SECRET, { expiresIn: time ? time+"M" : process.env.JWT_REFRESH_EXPIRATION_DAYS+"d" })
+const getToken = (email, id, role, time) => {
+    return jwt.sign({ email, id: id.toString(), role: !role ? "role" : role }, constants.SECRET, { expiresIn: time ? time + "M" : process.env.JWT_REFRESH_EXPIRATION_DAYS + "d" })
 };
 
 const checkToken = (req, res, next) => {
-    let { method,originalUrl } = req;
-    method=method?method:"UNDEFINED";
-    originalUrl=originalUrl?originalUrl:"UNDEFINED";
-    console.log("REQUEST TYPE : "+method);
-    console.log("URL : "+originalUrl);
+    let { method, originalUrl } = req;
+    method = method ? method : "UNDEFINED";
+    originalUrl = originalUrl ? originalUrl : "UNDEFINED";
+    console.log("REQUEST TYPE : " + method);
+    console.log("URL : " + originalUrl);
     let token = req.headers['authorization'];
     if (token) {
         if (token.startsWith('Bearer ')) {
@@ -23,40 +23,24 @@ const checkToken = (req, res, next) => {
                 if (err) {
                     // prisma.user.update({ where: { id: Number(decoded.id) }, data: { token: "" } });
                     console.log(err);
-                    throw new ApiError(401,INVALIDAUTH);
+                    throw new ApiError(401, INVALIDAUTH);
                 } else {
                     req.user = decoded;
-                    checkuser(req.user,token,next);
+                    checkuser(req.user, token, next);
                 }
             });
         }
     }
     else {
-        throw new ApiError(401,INVALIDAUTH);
+        throw new ApiError(401, INVALIDAUTH);
     }
 };
 
-async function checkuser(user,token,next) {
-    try{
+async function checkuser(user, token, next) {
+    try {
         if (!user) {
-            throw new ApiError(401,INVALIDAUTH);
+            throw new ApiError(401, INVALIDAUTH);
         }
-        // if(user.role_id==5 || user.role_id==6 || user.role_id==4 || user.role_id==1) {
-        //     user=await prisma.user.findUnique({ where: { id: Number(user.id) } });
-        //     if (!user || user.token != token ) {
-        //         await prisma.user.update({ where: { id: Number(user.id) }, data: { token: "" } });
-        //         throw new ApiError(401,INVALIDAUTH);
-        //     }
-        //     if (user.status == "inactive") {
-        //         throw new ApiError(401,'User is inactive');
-        //     }
-        // } else {
-        //     user=await prisma.event_user.findUnique({ where: { id: Number(user.id) } });
-        //     if (!user || user.token != token ) {
-        //         await prisma.event_user.update({ where: { id: Number(user.id) }, data: { token: "" } });
-        //         throw new ApiError(401,INVALIDAUTH);
-        //     }
-        // }
         next();
     } catch (e) {
         next(e);
@@ -90,4 +74,4 @@ const issuperadmin = (req, res, next) => {
     }
 };
 
-export default { checkToken,isadmin,issuperadmin,ishost,getToken }
+export default { checkToken, isadmin, issuperadmin, ishost, getToken }
