@@ -36,11 +36,11 @@ const initsocket = async (app) => {
     })
 }
 
-let include = { role: { select: { id: true, name: true } } };
-const select = ["id", "name", "email", "role", "xcord", "ycord", "created_on", "modified_on"];
-const get = async (req, res, next) => crud.get(req, res, next, "tag", select, include);
-const getbyid = async (req, res, next) => crud.getbyid(req, res, next, "tag", select, include);
-const deletebyid = async (req, res, next) => crud.deletebyid(req, res, next, "tag");
+let include ={role:{select:{id:true,name:true}}};
+const select = ["id","name","email","role","xcord","ycord","rssi1","rssi2","rssi3","rssi4","created_on","modified_on"];
+const get = async (req, res, next) => crud.get(req,res,next,"tag",select,include);
+const getbyid = async (req, res, next) => crud.getbyid(req,res,next,"tag",select,include);
+const deletebyid = async (req, res, next) => crud.deletebyid(req,res,next,"tag");
 
 const getalltags = async (req, res, next) => {
     return crudf.get("tag", {}, { coords: true }, undefined);
@@ -102,12 +102,10 @@ const createtag = async (req, role) => {
 }
 
 const updatetag = async (req) => {
-    let { password, name, email, token, role_id, xcord, ycord } = req.body;
-    if (password) password = bcrypt.hashSync(password, salt);
-    xcord = parseFloat(xcord);
-    ycord = parseFloat(ycord);
-    const body = { password, name, email, token, role_id, xcord, ycord };
-    return crudf.updatebyid("tag", req.user.id, body);
+    let { password,name,email,token,role_id,xcord,ycord,rssi1,rssi2,rssi3,rssi4 } = req.body;
+    if(password) password = bcrypt.hashSync(password, salt);
+    const body = { password,name,email,token,role_id,xcord,ycord,rssi1,rssi2,rssi3,rssi4 };
+    return crudf.updatebyid("tag",req.params.id,body);
 }
 
 const updatecords = async (req) => {
